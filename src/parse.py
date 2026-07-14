@@ -15,8 +15,10 @@ class Hub:
 
 @dataclass
 class Connection:
-    start: str = None
-    end: str = None
+    start_name: str = None
+    end_name: str = None
+    start: Hub = None
+    end: Hub = None
     max_link: int = 1
 
 
@@ -29,7 +31,7 @@ class Map:
     connections: list[Connection] = field(default_factory=list)
 
 
-class ParseFile():
+class ParseFile:
 
     def read_file(self, filename):
         lines = []
@@ -51,6 +53,7 @@ class ParseFile():
         for line in lines:
             conection = Connection()
             hub = Hub()
+
             if line.startswith("nb_drones"):
                 try:
                     drone_map.nb_drones = int(line.split(":")[1].strip())
@@ -58,6 +61,7 @@ class ParseFile():
                     return "Fail", f"nb_drones schould be an int: {e}"
                 if drone_map.nb_drones <= 0:
                     return "Fail", "number of drones should be > 0"
+
             elif line.startswith("start_hub"):
                 infos: str = line.split(":")[1]
                 part, _, options = infos.partition("[")
@@ -91,6 +95,7 @@ class ParseFile():
                 if drone_map.start is not None:
                     return "Fail", f"Error: multiple {hub.name} found"
                 drone_map.start = hub
+
             elif line.startswith("end_hub"):
                 infos: str = line.split(":")[1]
                 part, _, options = infos.partition("[")
@@ -124,6 +129,7 @@ class ParseFile():
                 if drone_map.end is not None:
                     return "Fail", f"Error: multiple {hub.name} found"
                 drone_map.end = hub
+
             elif line.startswith("hub"):
                 infos: str = line.split(":")[1]
                 part, _, options = infos.partition("[")
@@ -162,13 +168,20 @@ class ParseFile():
                         if h.name == hub.name:
                             return "Fail", f"Error: multiple {hub.name} found"
                 drone_map.hubs.append(hub)
+
             elif line.startswith("connection"):
                 li = line.split(":")[1].strip()
                 part, _, options = li.partition("[")
                 options = options.replace("]", "").strip()
+                if "-" not in part:
+                    return "Fail", ("the connections need to be"
+                                    " seperated by '-'")
                 parts = part.split("-")
-                conection.start = parts[0]
-                conection.end = parts[1]
+                if len(parts) != 2:
+                    return "Fail", (f"{line}this connection"
+                                    " is missing one argument")
+                conection.start_name = parts[0]
+                conection.end_name = parts[1]
                 if options != "":
                     if "=" not in option:
                         return "Fail", f"{options} wrong structured"
@@ -176,7 +189,7 @@ class ParseFile():
                         conection.max_link = int(options.split("=")[1])
                     except ValueError as e:
                         return "Fail", f"invalid max_link_capacity {e}"
-                if hub.max_drones <= 0:
+                if conection.max_link <= 0:
                     return "fail", "number of max link capacity should be > 0"
                 drone_map.connections.append(conection)
             elif line.strip() == "" or line.startswith("#"):
@@ -195,21 +208,49 @@ class ParseFile():
                 return "Fail", f"Multiple {start_hub.name}"
             if hub.name == end_hub.name:
                 return "Fail", f"Multiple {end_hub.name}"
+
         valid: int = 1
         for connec in connections:
-            if connec.start not in start_hub.name:
+            if connec.start_name is None:
+                return "Fail", "in one connection a start point is missing"
+            if connec.end_name is None:
+                return "Fail", "in one connection a end point is missing"
+            if connec.start_name != start_hub.name:
                 valid = 0
                 for hub in hubs:
-                    if connec.start == hub.name:
+                    if connec.start_name == hub.name:
                         valid = 1
             if valid != 1:
-                return "Fail", f"{connec} start hub is incorrect"
-            if connec.end not in end_hub.name:
-                valid = 0
-                for hub in hubs:
-                    if connec.end == hub.name:
-                        valid = 1
-            if valid != 1:
-                return "Fail", f"{connec} end hub is incorrect"
-        return "succsess", "yes"
+                return "Fail", f"{connec} start_name hub is incorrect"
 
+            if connec.end_name != end_hub.name:
+                valid = 0
+                for hub in hubs:
+                    if connec.end_name == hub.name:
+                        valid = 1
+            if valid != 1:
+                return "Fail", f"{connec} end_name hub is incorrect"
+
+            if connec.start_name == connec.end_name:
+                return "Fail", (f"path {connec.start_name} - {connec.end_name}"
+                                "invalid path can't connect to itself")
+            for h_conec in map.connections:
+                if (connec.start_name + connec.end_name ==
+                   h_conec.end_name + h_conec.start_name):
+                    return "Fail", "a connection A-B == B-A is found"
+
+            for con in connections:
+                if con.start_name == start_hub.name:
+                    con.start = start_hub
+                else:
+                    for hub in hubs:
+                        if con.start_name == hub.name:
+                            con.start = hub
+                if con.end_name == end_hub.name:
+                    con.end = end_hub
+                else:
+                    for hub in hubs:
+                        if con.end_name == hub.name:
+                            con.end = hub
+        map.connections = connections
+        return "succsess", map
