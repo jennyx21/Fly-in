@@ -180,8 +180,8 @@ class ParseFile:
                 if len(parts) != 2:
                     return "Fail", (f"{line}this connection"
                                     " is missing one argument")
-                conection.start_name = parts[0]
-                conection.end_name = parts[1]
+                conection.start_name = parts[0].strip()
+                conection.end_name = parts[1].strip()
                 if options != "":
                     if "=" not in option:
                         return "Fail", f"{options} wrong structured"
