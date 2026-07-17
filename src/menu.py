@@ -110,11 +110,11 @@ def map_selctor(menu: Menu):
             time.sleep(1)
             return map_selctor(menu)
         if second_input == 1:
-            return "maps/easy/01_linear_path.txt"
+            return "1", "maps/easy/01_linear_path.txt"
         elif second_input == 2:
-            return "maps/easy/02_simple_fork.txt"
+            return "2", "maps/easy/02_simple_fork.txt"
         elif second_input == 3:
-            return "maps/easy/03_basic_capacity.txt"
+            return "3", "maps/easy/03_basic_capacity.txt"
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
@@ -136,11 +136,11 @@ def map_selctor(menu: Menu):
             time.sleep(1)
             return map_selctor(menu)
         if second_input == 1:
-            return "maps/medium/01_dead_end_trap.txt"
+            return "4", "maps/medium/01_dead_end_trap.txt"
         elif second_input == 2:
-            return "maps/medium/02_circular_loop.txt"
+            return "5", "maps/medium/02_circular_loop.txt"
         elif second_input == 3:
-            return "maps/medium/03_priority_puzzle.txt"
+            return "6", "maps/medium/03_priority_puzzle.txt"
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
@@ -161,11 +161,11 @@ def map_selctor(menu: Menu):
             time.sleep(1)
             return map_selctor(menu)
         if second_input == 1:
-            return "maps/hard/01_maze_nightmare.txt"
+            return "7", "maps/hard/01_maze_nightmare.txt"
         elif second_input == 2:
-            return "maps/hard/02_capacity_hell.txt"
+            return "8", "maps/hard/02_capacity_hell.txt"
         elif second_input == 3:
-            return "maps/hard/03_ultimate_challenge.txt"
+            return "9", "maps/hard/03_ultimate_challenge.txt"
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
@@ -186,7 +186,7 @@ def map_selctor(menu: Menu):
             time.sleep(1)
             return map_selctor(menu)
         if second_input == 1:
-            return "maps/challenger/01_the_impossible_dream.txt"
+            return "10", "maps/challenger/01_the_impossible_dream.txt"
         elif second_input == 2:
             return map_selctor(menu)
         elif second_input == 0:

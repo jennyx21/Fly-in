@@ -2,6 +2,28 @@ from dataclasses import dataclass, field
 
 ZONES = ["priority", "restricted", "blocked", "normal"]
 
+COLORS = {
+    "white": (255, 255, 255),
+    "black": (0, 0, 0),
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+
+    "purple": (128, 0, 128),
+    "brown": (139, 69, 19),
+    "orange": (255, 165, 0),
+    "maroon": (128, 0, 0),
+    "gold": (255, 215, 0),
+    "darkred": (139, 0, 0),
+    "violet": (238, 130, 238),
+    "crimson": (220, 20, 60),
+    "yellow": (255, 255, 0),
+    "cyan": (0, 255, 255),
+    "lime": (0, 255, 0),
+    "magenta": (255, 0, 255),
+    "rainbow": (123, 213, 231)
+    }
+
 
 @dataclass
 class Hub:
@@ -10,6 +32,7 @@ class Hub:
     y: int = None
     color: str = "white"
     zone: str = "normal"
+    cost: int = 1
     max_drones: int = 1
 
 
@@ -84,7 +107,7 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                hub.color = settings.get("color", "white")
+                self.set_colors(settings.get("color", "white"), hub)
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -118,7 +141,7 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                hub.color = settings.get("color", "white")
+                self.set_colors(settings.get("color", "white"), hub)
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -152,7 +175,7 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                hub.color = settings.get("color", "white")
+                self.set_colors(settings.get("color", "white"), hub)
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -160,9 +183,13 @@ class ParseFile:
                 if hub.max_drones <= 0:
                     return "fail", (f"number of max drones in {hub.name} "
                                     "should be > 0")
-                hub.zone = settings.get("zone", None)
-                if hub.zone not in ZONES and hub.zone is not None:
+                hub.zone = settings.get("zone", "normal")
+                if hub.zone not in ZONES:
                     return "Fail", f"{hub.zone} is an invalid ZoneType"
+                if hub.zone == "blocked":
+                    hub.cost = float("inf")
+                elif hub.zone == "restricted":
+                    hub.cost = 2
                 if drone_map.hubs is not None:
                     for h in drone_map.hubs:
                         if h.name == hub.name:
@@ -254,3 +281,8 @@ class ParseFile:
                             con.end = hub
         map.connections = connections
         return "succsess", map
+
+    def set_colors(self, name: str, hub: Hub):
+        colors = COLORS
+        hub.color = colors[name]
+
