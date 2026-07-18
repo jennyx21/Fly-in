@@ -33,6 +33,7 @@ class Hub:
     color: str = "white"
     zone: str = "normal"
     cost: int = 1
+    blocked: bool = False
     max_drones: int = 1
 
 
@@ -107,7 +108,7 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                self.set_colors(settings.get("color", "white"), hub)
+                hub.color = settings.get("color", "white")
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -142,7 +143,7 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                self.set_colors(settings.get("color", "white"), hub)
+                hub.color = settings.get("color", "white")
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -177,7 +178,8 @@ class ParseFile:
                         return "Fail", f"{option} wrong structured"
                     key, value = option.split("=")
                     settings[key] = value
-                self.set_colors(settings.get("color", "white"), hub)
+                # self.set_colors(settings.get("color", "white"), hub)
+                hub.color = settings.get("color", "white")
                 try:
                     hub.max_drones = int(settings.get("max_drones", 1))
                 except ValueError as e:
@@ -284,7 +286,7 @@ class ParseFile:
         map.connections = connections
         return "succsess", map
 
-    def set_colors(self, name: str, hub: Hub):
-        colors = COLORS
-        hub.color = colors[name]
+    # def set_colors(self, name: str, hub: Hub):
+    #     colors = COLORS
+    #     hub.color[name] = colors[name]
 

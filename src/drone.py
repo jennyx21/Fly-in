@@ -8,13 +8,10 @@ DRONE_COLOR = (r.randint(10, 255), r.randint(10, 255), r.randint(10, 255),)
 @dataclass
 class Drone:
     id: int
-    y: float
-    x: float
+    position: Hub
     color: str = "white"
-    current: int = 1
-    waiting: int = 0
     finished: bool = False
-    moving: bool = False
+    waited: bool = False
     path: list[Hub] = field(default_factory=list)
 
 
@@ -30,14 +27,12 @@ class Create_drones:
         while i <= self.nb:
             if i > 0:
                 for hub in self.path:
-                    if hub.zone == "resticted":
+                    if hub.zone == "restricted":
                         wait += 1
             drone = Drone(
                 id=i,
-                x=self.path[0].x,
-                y=self.path[0].y,
+                position=self.path[0],
                 color=DRONE_COLOR,
-                waiting=wait,
                 path=self.path.copy()
                         )
             drones.append(drone)

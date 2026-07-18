@@ -26,7 +26,7 @@ class Graph:
             start.neighbors.append(end)
             end.neighbors.append(start)
 
-    def find_path(self, start_name: str, end_name: str):
+    def find_path_bfs(self, start_name: str, end_name: str):
         queue = []
         visited = set()
         queue.append([self.nodes[start_name].hub])
@@ -45,3 +45,5 @@ class Graph:
                     queue.append(new_path)
 
         return False
+
+    # def find_path_dijkstra():

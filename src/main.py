@@ -3,6 +3,7 @@ from parse import ParseFile, Map
 from graph import Graph
 from visuals import Visualizer
 from drone import Create_drones
+from simulation import Simulation
 
 
 def main():
@@ -10,7 +11,7 @@ def main():
     lines = []
     drone_map = Map()
     parser = ParseFile()
-    easy = ["1", "2", "3"]
+    bfs = ["1", "2", "3", "4"]
     map, filename = map_selctor(menu)
     state, lines = parser.read_file(filename)
     if state != "succsess":
@@ -26,16 +27,20 @@ def main():
         return
     nb_drones = result.nb_drones
     graph = Graph(result)
-    path = graph.find_path(result.start.name, result.end.name)
-    if path is False:
+    path_bfs = graph.find_path_bfs(result.start.name, result.end.name)
+    # path_dij = graph.find_path_dijkstra(result.start.name, result.end.name)
+    if path_bfs is False:
         print("No Path found")
-    else:
-        for hub in path:
-            print(hub.name)
-    # if map in easy:
-    drones = Create_drones(nb_drones, path).init_drones()
-    visuals = Visualizer(result, drones)
-    visuals.make_window()
+    # if map in bfs:
+    drones = Create_drones(nb_drones, path_bfs).init_drones()
+    Simulation(drones, result, path_bfs).start()
+    moves = Simulation(drones, result, path_bfs).next_turn()
+    # else:
+        # drones = Create_drones(nb_drones, path_dij).init_drones()
+        # Simulation(drones, result, path_dij).start()
+        # moves = Simulation(drones, result, path_dij).next_turn()
+    # visuals = Visualizer(Moves)
+    # visuals.make_window()
 
 
 if __name__ == "__main__":
