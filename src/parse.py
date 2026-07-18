@@ -117,6 +117,7 @@ class ParseFile:
                                     "should be > 0")
                 if drone_map.start is not None:
                     return "Fail", f"Error: multiple {hub.name} found"
+                hub.cost = 0
                 drone_map.start = hub
 
             elif line.startswith("end_hub"):
@@ -151,6 +152,7 @@ class ParseFile:
                                     "should be > 0")
                 if drone_map.end is not None:
                     return "Fail", f"Error: multiple {hub.name} found"
+                hub.cost = 0
                 drone_map.end = hub
 
             elif line.startswith("hub"):

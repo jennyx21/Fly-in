@@ -10,6 +10,7 @@ def main():
     lines = []
     drone_map = Map()
     parser = ParseFile()
+    easy = ["1", "2", "3"]
     map, filename = map_selctor(menu)
     state, lines = parser.read_file(filename)
     if state != "succsess":
@@ -31,6 +32,7 @@ def main():
     else:
         for hub in path:
             print(hub.name)
+    # if map in easy:
     drones = Create_drones(nb_drones, path).init_drones()
     visuals = Visualizer(result, drones)
     visuals.make_window()
