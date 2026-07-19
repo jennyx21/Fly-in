@@ -289,4 +289,3 @@ class ParseFile:
     # def set_colors(self, name: str, hub: Hub):
     #     colors = COLORS
     #     hub.color[name] = colors[name]
-

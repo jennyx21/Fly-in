@@ -4,6 +4,8 @@ from graph import Graph
 from visuals import Visualizer
 from drone import Create_drones
 from simulation import Simulation
+import json
+from dataclasses import asdict
 
 
 def main():
@@ -21,26 +23,28 @@ def main():
     if state != "succsess":
         print(drone_map)
         return
-    state, result = parser.validate_deeper(drone_map)
+    state, map_result = parser.validate_deeper(drone_map)
     if state != "succsess":
-        print(result)
+        print(map_result)
         return
-    nb_drones = result.nb_drones
-    graph = Graph(result)
-    path_bfs = graph.find_path_bfs(result.start.name, result.end.name)
-    # path_dij = graph.find_path_dijkstra(result.start.name, result.end.name)
+    nb_drones = map_result.nb_drones
+    graph = Graph(map_result)
+    path_bfs = graph.find_path_bfs(map_result.start.name, map_result.end.name)
+    # path_dij = graph.find_path_dijkstra(map_result.start.name, map_result.end.name)
     if path_bfs is False:
         print("No Path found")
     # if map in bfs:
-    drones = Create_drones(nb_drones, path_bfs).init_drones()
-    Simulation(drones, result, path_bfs).start()
-    moves = Simulation(drones, result, path_bfs).next_turn()
+    state, drones = Create_drones(nb_drones, path_bfs, map_result).init_drones()
+    Simulation(drones, map_result, path_bfs).start()
+    moves = Simulation(drones, map_result, path_bfs).next_turn()
+    # print(moves[0])
+
     # else:
         # drones = Create_drones(nb_drones, path_dij).init_drones()
-        # Simulation(drones, result, path_dij).start()
-        # moves = Simulation(drones, result, path_dij).next_turn()
-    # visuals = Visualizer(Moves)
-    # visuals.make_window()
+        # Simulation(drones, map_result, path_dij).start()
+        # moves = Simulation(drones, map_result, path_dij).next_turn()
+    visuals = Visualizer(moves, map_result, drones)
+    visuals.make_window()
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ TC = {
 
 @dataclass
 class Move:
-    trun: int
+    turn: int
     drone: Drone
     start: Hub
     end: Hub
@@ -56,31 +56,44 @@ class Simulation:
         moves = []
         turns = []
         while self.check_drones() > 0:
-
+            self.update_map()
             for d in self.drones:
                 if d.finished is False:
                     start_pos = d.position
-                    nb_schedule = self.schedule(d) 
+                    nb_schedule = self.schedule(d)
                     if nb_schedule == 1:
                         po_index = self.path.index(d.position)
-                        d.position = self.path[po_index + 1]
-                        turn.append(f"D{d.id} {TC[start_pos.color]}"
-                                    f"{start_pos.name} {TC['reset']}-> "
-                                    f"{TC[d.position.color]}{d.position.name}"
-                                    f"{TC['reset']} ")
-                        move = Move(
-                            trun=self.turn,
-                            drone=d,
-                            start=start_pos,
-                            end=d.position
-                        )
+                        if self.check_next_hub(self.path[po_index + 1]):
+                            d.position = self.path[po_index + 1]
+                            turn.append(f"D{d.id} {TC[start_pos.color]}"
+                                        f"{start_pos.name} {TC['reset']}-> "
+                                        f"{TC[d.position.color]}"
+                                        f"{d.position.name}"
+                                        f"{TC['reset']} ")
+                            move = Move(
+                                turn=self.turn,
+                                drone=d,
+                                start=start_pos,
+                                end=d.position
+                            )
+                            turns.append(move)
+                        elif not self.check_next_hub(self.path[po_index + 1]):
+                            turn.append(f"D{d.id} {TC[start_pos.color]}"
+                                        f"{start_pos.name}{TC['reset']}"
+                                        "[waiting]")
+                            move = Move(
+                                turn=self.turn,
+                                drone=d,
+                                start=start_pos,
+                                end=d.position
+                            )
                         turns.append(move)
                     elif nb_schedule == 2:
                         turn.append(f"D{d.id} {TC[start_pos.color]}"
                                     f"{start_pos.name}{TC['reset']}"
                                     " [restricted] ")
                         move = Move(
-                            trun=self.turn,
+                            turn=self.turn,
                             drone=d,
                             start=start_pos,
                             end=d.position
@@ -88,6 +101,8 @@ class Simulation:
                         turns.append(move)
                     self.update_map()
             if self.check_drones() == 0:
+                for d in self.drones: 
+                    d.position = self.map.start
                 return moves
             print(f"Turn {self.turn}: ", end="")
             while i < len(turn):
@@ -119,7 +134,7 @@ class Simulation:
     def schedule(self, drone: Drone):
         if drone.finished:
             return 0
-        
+
         current_index = drone.path.index(drone.position)
 
         if current_index == len(drone.path) - 1:
@@ -135,6 +150,10 @@ class Simulation:
 
             if next_hub.blocked:
                 return 0
-        
+
         return 1
 
+    def check_next_hub(self, pos_next: Hub):
+        if pos_next.blocked:
+            return False
+        return True

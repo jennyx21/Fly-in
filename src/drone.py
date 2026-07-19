@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from parse import Hub
+from parse import Hub, Map
 import random as r
 
 DRONE_COLOR = (r.randint(10, 255), r.randint(10, 255), r.randint(10, 255),)
@@ -16,9 +16,10 @@ class Drone:
 
 
 class Create_drones:
-    def __init__(self, nb_drones: int, path: list[Hub]):
+    def __init__(self, nb_drones: int, path: list[Hub], map: Map):
         self.nb = nb_drones
         self.path = path
+        self.map = map
 
     def init_drones(self):
         drones = []
@@ -31,7 +32,7 @@ class Create_drones:
                         wait += 1
             drone = Drone(
                 id=i,
-                position=self.path[0],
+                position=self.map.start,
                 color=DRONE_COLOR,
                 path=self.path.copy()
                         )
@@ -41,4 +42,4 @@ class Create_drones:
 
         if len(drones) < 1:
             return "Fail", "No drones"
-        return drones
+        return"succsess", drones
