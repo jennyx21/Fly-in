@@ -77,7 +77,7 @@ class Simulation:
                                 end=d.position
                             )
                             turns.append(move)
-                        elif not self.check_next_hub(self.path[po_index + 1]):
+                        else:
                             turn.append(f"D{d.id} {TC[start_pos.color]}"
                                         f"{start_pos.name}{TC['reset']}"
                                         "[waiting]")
@@ -85,9 +85,9 @@ class Simulation:
                                 turn=self.turn,
                                 drone=d,
                                 start=start_pos,
-                                end=d.position
+                                end=start_pos
                             )
-                        turns.append(move)
+                            turns.append(move)
                     elif nb_schedule == 2:
                         turn.append(f"D{d.id} {TC[start_pos.color]}"
                                     f"{start_pos.name}{TC['reset']}"
@@ -145,11 +145,6 @@ class Simulation:
             return 2
         elif drone.position.zone == "restricted" and drone.waited is True:
             drone.waited = False
-        else:
-            next_hub = drone.path[current_index + 1]
-
-            if next_hub.blocked:
-                return 0
 
         return 1
 

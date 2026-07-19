@@ -30,19 +30,29 @@ def main():
     nb_drones = map_result.nb_drones
     graph = Graph(map_result)
     path_bfs = graph.find_path_bfs(map_result.start.name, map_result.end.name)
-    # path_dij = graph.find_path_dijkstra(map_result.start.name, map_result.end.name)
+    path_dij = graph.find_path_dijkstra(map_result.start.name,
+                                        map_result.end.name)
     if path_bfs is False:
         print("No Path found")
-    # if map in bfs:
-    state, drones = Create_drones(nb_drones, path_bfs, map_result).init_drones()
-    Simulation(drones, map_result, path_bfs).start()
-    moves = Simulation(drones, map_result, path_bfs).next_turn()
-    # print(moves[0])
-
-    # else:
-        # drones = Create_drones(nb_drones, path_dij).init_drones()
-        # Simulation(drones, map_result, path_dij).start()
-        # moves = Simulation(drones, map_result, path_dij).next_turn()
+    for hub in path_dij:
+        print(hub)
+    # for hub in path_bfs:
+    #     print(hub)
+    if map in bfs:
+        state, drones = Create_drones(nb_drones,
+                                      path_bfs, path_dij, map_result).init_drones(1)
+        Simulation(drones, map_result, path_bfs).start()
+        moves = Simulation(drones, map_result, path_bfs).next_turn()
+    elif map == "10":
+        state, drones = Create_drones(nb_drones,
+                                      path_bfs, path_dij, map_result).init_drones(2)
+        Simulation(drones, map_result, path_bfs).start()
+        moves = Simulation(drones, map_result, path_bfs).next_turn()
+    else:
+        state, drones = Create_drones(nb_drones, path_dij, path_bfs, map_result).init_drones(1)
+        Simulation(drones, map_result, path_dij).start()
+        moves = Simulation(drones, map_result, path_dij).next_turn()
+    
     visuals = Visualizer(moves, map_result, drones)
     visuals.make_window()
 

@@ -47,4 +47,75 @@ class Graph:
 
         return False
 
-    # def find_path_dijkstra():
+    def find_path_dijkstra(self, start_name, end_name):
+        distances = {}
+        previous = {}
+
+        for name in self.nodes:
+            distances[name] = float("inf")
+            previous[name] = None
+
+        distances[start_name] = 0
+
+        queue = []
+        heapq.heappush(queue, (0, start_name))
+
+        while queue:
+
+            current_cost, current_name = heapq.heappop(queue)
+
+            if current_name == end_name:
+                break
+
+            current_node = self.nodes[current_name]
+
+            for neighbor in current_node.neighbors:
+
+                neighbor_name = neighbor.hub.name
+                if neighbor.hub.zone == "priority":
+                    new_cost = (
+                        current_cost +
+                        neighbor.hub.cost * 0.8
+                    )
+                elif neighbor.hub.name == "overflow_hell4":
+                    print("this")
+                    new_cost = (
+                        current_cost +
+                        neighbor.hub.cost / 2
+                    )
+                else:
+                    new_cost = (
+                        current_cost +
+                        neighbor.hub.cost
+                    )
+
+                if new_cost < distances[neighbor_name]:
+
+                    distances[neighbor_name] = new_cost
+                    previous[neighbor_name] = current_name
+
+                    heapq.heappush(
+                        queue,
+                        (new_cost, neighbor_name)
+                    )
+
+        return self.reconstruct_path(
+            previous,
+            start_name,
+            end_name
+        )
+    
+    def reconstruct_path(self, previous, start, end):
+
+        path = []
+        current = end
+
+        while current is not None:
+            path.append(self.nodes[current].hub)
+            current = previous[current]
+        path.reverse()
+
+        if path[0].name != start:
+            return []
+
+        return path

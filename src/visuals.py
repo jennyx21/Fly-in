@@ -89,18 +89,30 @@ class Visualizer:
             elif self.turn < len(self.moves):
                 current_turn = self.moves[self.turn]
                 for m in current_turn:
-                    d_id = m.drone.id
-                    start = m.start
-                    target = m.end
-                    dx = target.x - start.x
-                    dy = target.y - start.y
-                    x = start.x + dx * progress
-                    y = start.y + dy * progress
-                    d_x = x * self.zoom + 0.1 * WIDTH + self.offset_x
-                    d_y = y * self.zoom + 0.5 * HEIGHT + self.offset_y
-                    pg.draw.circle(screen, m.drone.color, (d_x, d_y), self.zoom / 6)
-                    t_id = font.render(f"D{d_id}", True, BLACK)
-                    screen.blit(t_id, (d_x, d_y))
+                    if m.start != m.end:
+                        d_id = m.drone.id
+                        start = m.start
+                        target = m.end
+                        dx = target.x - start.x
+                        dy = target.y - start.y
+                        x = start.x + dx * progress
+                        y = start.y + dy * progress
+                        d_x = x * self.zoom + 0.1 * WIDTH + self.offset_x
+                        d_y = y * self.zoom + 0.5 * HEIGHT + self.offset_y
+                        pg.draw.circle(screen, m.drone.color,
+                                       (d_x, d_y), self.zoom / 6)
+                        t_id = font.render(f"D{d_id}", True, BLACK)
+                        screen.blit(t_id, (d_x, d_y))
+                    else:
+                        d_id = m.drone.id
+                        xd = (m.start.x * self.zoom + 0.1
+                              * WIDTH + self.offset_x)
+                        yd = (m.start.y * self.zoom + 0.5 *
+                              HEIGHT + self.offset_y)
+                        pg.draw.circle(screen, m.drone.color,
+                                       (xd, yd), self.zoom / 6)
+                        t_id = font.render(f"D{d_id}", True, BLACK)
+                        screen.blit(t_id, (xd, yd))
 
                 if not pause and self.run is True:
                     progress += speed
