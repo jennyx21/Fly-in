@@ -8,7 +8,7 @@ DRONE_COLOR = (r.randint(10, 255), r.randint(10, 255), r.randint(10, 255))
 @dataclass
 class Drone:
     id: int
-    position: Hub
+    position: Hub | None
     color:  tuple[int, int, int] = (255, 255, 255)
     finished: bool = False
     waited: bool = False

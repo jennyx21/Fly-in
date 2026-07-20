@@ -70,16 +70,17 @@ class Simulation:
                         next_hub = d.path[po_index + 1]
                         if self.check_next_hub(next_hub):
                             d.position = next_hub
+                            end_position = next_hub
                             turn.append(f"D{d.id} {TC[start_pos.color]}"
                                         f"{start_pos.name} {TC['reset']}-> "
-                                        f"{TC[d.position.color]}"
-                                        f"{d.position.name}"
+                                        f"{TC[end_position.color]}"
+                                        f"{end_position.name}"
                                         f"{TC['reset']} ")
                             move = Move(
                                 turn=self.turn,
                                 drone=d,
                                 start=start_pos,
-                                end=d.position
+                                end=end_position
                             )
                             turns.append(move)
                         else:

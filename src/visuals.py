@@ -1,5 +1,5 @@
 import pygame as pg
-from parse import Map, COLORS
+from parse import Map, COLORS, Hub
 from drone import Drone
 from simulation import Move
 
@@ -8,17 +8,22 @@ WHITE = (255, 255, 255)
 
 
 class Visualizer:
-    def __init__(self, moves: list[Move], map: Map, drones: list[Drone]):
+    def __init__(
+        self,
+        moves: list[list[Move]],
+        map: Map,
+        drones: list[Drone],
+    ) -> None:
         self.map = map
-        self.zoom = 50
-        self.offset_x = 100
-        self.offset_y = 100
+        self.zoom: float = 50.0
+        self.offset_x: float = 100.0
+        self.offset_y: float = 100.0
         self.drones = drones
         self.run = False
         self.moves = moves
         self.turn = 0
 
-    def make_window(self):
+    def make_window(self) -> None:
         pg.init()
         WIDTH = 1500
         HEIGHT = 800
@@ -48,23 +53,39 @@ class Visualizer:
 
             screen.fill((200, 200, 255))
             for connection in self.map.connections:
-                x_start = (connection.start.x * self.zoom +
+                if connection.start is None or connection.end is None:
+                    continue
+                start_x = connection.start.x
+                start_y = connection.start.y
+                end_x = connection.end.x
+                end_y = connection.end.y
+                if start_x is None or start_y is None:
+                    continue
+                if end_x is None or end_y is None:
+                    continue
+                x_start = (start_x * self.zoom +
                            0.1 * WIDTH + self.offset_x)
-                y_start = (connection.start.y * self.zoom +
+                y_start = (start_y * self.zoom +
                            0.5 * HEIGHT + self.offset_y)
-                x_end = (connection.end.x * self.zoom +
+                x_end = (end_x * self.zoom +
                          0.1 * WIDTH + self.offset_x)
-                y_end = (connection.end.y * self.zoom +
+                y_end = (end_y * self.zoom +
                          0.5 * HEIGHT + self.offset_y)
                 pg.draw.line(screen, BLACK, (x_start, y_start),
                                             (x_end, y_end))
-            for hub in self.map.hubs + [self.map.start, self.map.end]:
+            hub_list: list[Hub] = [
+                hub for hub in [*self.map.hubs, self.map.start, self.map.end]
+                if hub is not None
+            ]
+            for hub in hub_list:
+                if hub.x is None or hub.y is None:
+                    continue
                 x = hub.x * self.zoom + 0.1 * WIDTH + self.offset_x
                 y = hub.y * self.zoom + 0.5 * HEIGHT + self.offset_y
                 pg.draw.circle(screen, WHITE, (x, y), self.zoom / 5)
                 pg.draw.circle(screen, COLORS[hub.color],
                                (x, y), self.zoom / 5.15)
-                text = font.render(hub.name, True, BLACK)
+                text = font.render(hub.name or "", True, BLACK)
                 screen.blit(text, (x - 6, y + 12))
 
             if keys[pg.K_a]:
@@ -80,6 +101,10 @@ class Visualizer:
 
             if self.turn < 1 and self.run is False:
                 for d in self.drones:
+                    if d.position is None:
+                        continue
+                    if d.position.x is None or d.position.y is None:
+                        continue
                     x = d.position.x * self.zoom + 0.1 * WIDTH + self.offset_x
                     y = d.position.y * self.zoom + 0.5 * HEIGHT + self.offset_y
                     pg.draw.circle(screen, d.color, (x, y), self.zoom / 6)
@@ -89,14 +114,26 @@ class Visualizer:
             elif self.turn < len(self.moves):
                 current_turn = self.moves[self.turn]
                 for m in current_turn:
+                    if m.start.x is None or m.start.y is None:
+                        continue
+                    if m.end.x is None or m.end.y is None:
+                        continue
                     if m.start != m.end:
                         d_id = m.drone.id
                         start = m.start
                         target = m.end
-                        dx = target.x - start.x
-                        dy = target.y - start.y
-                        x = start.x + dx * progress
-                        y = start.y + dy * progress
+                        start_x = start.x
+                        start_y = start.y
+                        target_x = target.x
+                        target_y = target.y
+                        if start_x is None or start_y is None:
+                            continue
+                        if target_x is None or target_y is None:
+                            continue
+                        dx = target_x - start_x
+                        dy = target_y - start_y
+                        x = start_x + dx * progress
+                        y = start_y + dy * progress
                         d_x = x * self.zoom + 0.1 * WIDTH + self.offset_x
                         d_y = y * self.zoom + 0.5 * HEIGHT + self.offset_y
                         pg.draw.circle(screen, m.drone.color,
