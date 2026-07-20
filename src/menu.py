@@ -1,10 +1,11 @@
 from error import NumberError
+from typing import Any
 import time
 
 
 class Menu:
 
-    def show(self):
+    def show(self) -> None:
         print("========================")
         print("Fly-In - Drone simulator")
         print("========================")
@@ -18,7 +19,7 @@ class Menu:
         print()
         print("Select a Number:")
 
-    def easy_map(self):
+    def easy_map(self) -> None:
         print("========================")
         print("Fly-In - Drone simulator")
         print("========================")
@@ -32,7 +33,7 @@ class Menu:
         print()
         print("Select a Number:")
 
-    def medium_map(self):
+    def medium_map(self) -> None:
         print("========================")
         print("Fly-In - Drone simulator")
         print("========================")
@@ -46,7 +47,7 @@ class Menu:
         print()
         print("Select a Number:")
 
-    def hard_map(self):
+    def hard_map(self) -> None:
         print("========================")
         print("Fly-In - Drone simulator")
         print("========================")
@@ -60,7 +61,7 @@ class Menu:
         print()
         print("Select a Number:")
 
-    def challenger_map(self):
+    def challenger_map(self) -> None:
         print("========================")
         print("Fly-In - Drone simulator")
         print("========================")
@@ -73,7 +74,7 @@ class Menu:
         print("Select a Number:")
 
 
-def map_selctor(menu: Menu):
+def map_selctor(menu: Menu) -> Any | tuple[str, str]:
     menu.show()
     validator = NumberError()
     try:
@@ -190,3 +191,4 @@ def map_selctor(menu: Menu):
 
     elif user_input == 0:
         return "0", "good bye :)"
+    return "invalid"
