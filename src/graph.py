@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 import heapq
 from parse import Map, Hub
+from error import MapError
 
 
 @dataclass
@@ -30,16 +31,12 @@ class Graph:
                 start.neighbors.append(end)
                 end.neighbors.append(start)
 
-    def find_path_bfs(
-        self,
-        start_name: str,
-        end_name: str,
-    ) -> bool | list[Hub]:
+    def find_path_bfs(self, start_name: str, end_name: str) -> list[Hub]:
         queue: list[list[Hub]] = []
         visited: set[str] = set()
         start_hub = self.nodes[start_name].hub
         if start_hub.name is None:
-            return False
+            raise MapError("no path")
 
         queue.append([start_hub])
         visited.add(start_hub.name)
@@ -63,13 +60,9 @@ class Graph:
                     new_path.append(neighbor.hub)
                     queue.append(new_path)
 
-        return False
+        raise MapError("no Path")
 
-    def find_path_dijkstra(
-        self,
-        start_name: str,
-        end_name: str,
-    ) -> list[Hub]:
+    def find_path_dijkstra(self, start_name: str, end_name: str) -> list[Hub]:
         distances: dict[str, float] = {}
         previous: dict[str, str | None] = {}
 

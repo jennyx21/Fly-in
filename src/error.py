@@ -1,3 +1,15 @@
+class ParserErorr(Exception):
+    pass
+
+
+class SimulationError(Exception):
+    pass
+
+
+class MapError(Exception):
+    pass
+
+
 class NumberError(Exception):
     pass
 

@@ -1,6 +1,7 @@
 from drone import Drone
 from parse import Map, Hub
 from dataclasses import dataclass
+from error import SimulationError
 
 TC = {
     "white": "\033[97m",
@@ -48,7 +49,7 @@ class Simulation:
         for d in self.drones:
             d.position = self.map.start
 
-    def next_turn(self) -> list[list[Move]] | str:
+    def next_turn(self) -> list[list[Move]]:
         nb_schedule = 0
         i = 0
         turn: list[str] = []
@@ -121,7 +122,7 @@ class Simulation:
             moves.append(turns.copy())
             turns.clear()
             self.turn += 1
-        return "simulation couldn n't be created"
+        raise SimulationError("simulation Failed")
 
     def check_drones(self) -> int:
         active = 0
