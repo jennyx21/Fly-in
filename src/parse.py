@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 ZONES = ["priority", "restricted", "blocked", "normal"]
 
@@ -27,9 +28,9 @@ COLORS = {
 
 @dataclass
 class Hub:
-    name: str = None
-    x: int = None
-    y: int = None
+    name: str | None = None
+    x: int | None = None
+    y: int | None = None
     color: str = "white"
     zone: str = "normal"
     cost: int = 1
@@ -39,25 +40,26 @@ class Hub:
 
 @dataclass
 class Connection:
-    start_name: str = None
-    end_name: str = None
-    start: Hub = None
-    end: Hub = None
+    start_name: str | None = None
+    end_name: str | None = None
+    start: Optional[Hub] = None
+    end: Optional[Hub] = None
     max_link: int = 1
 
 
 @dataclass
 class Map:
-    nb_drones: int = None
-    start: Hub = None
-    end: Hub = None
+    nb_drones: int | None = None
+    start: Optional[Hub] = None
+    end: Optional[Hub] = None
     hubs: list[Hub] = field(default_factory=list)
     connections: list[Connection] = field(default_factory=list)
 
 
 class ParseFile:
 
-    def read_file(self, filename):
+    def read_file(self, filename: str) -> (tuple[str, str] |
+                                           tuple[str, list[str]]):
         lines = []
         try:
             with open(filename) as f:
@@ -72,7 +74,8 @@ class ParseFile:
                 continue
         return "succsess", lines
 
-    def take_values(self, lines: list[str]):
+    def take_values(self, lines: list[str]) -> (tuple[str, str]
+                                                | tuple[str, Map]):
         drone_map = Map()
         for line in lines:
             conection = Connection()
@@ -87,8 +90,8 @@ class ParseFile:
                     return "Fail", "number of drones should be > 0"
 
             elif line.startswith("start_hub"):
-                infos: str = line.split(":")[1]
-                part, _, options = infos.partition("[")
+                infos_start: str = line.split(":")[1]
+                part, _, options = infos_start.partition("[")
                 options = options.replace("]", "").strip()
                 parts = part.split()
                 if len(parts) > 3 or len(parts) < 3:
@@ -122,8 +125,8 @@ class ParseFile:
                 drone_map.start = hub
 
             elif line.startswith("end_hub"):
-                infos: str = line.split(":")[1]
-                part, _, options = infos.partition("[")
+                infos_end: str = line.split(":")[1]
+                part, _, options = infos_end.partition("[")
                 options = options.replace("]", "").strip()
                 parts = part.split()
                 if len(parts) > 3 or len(parts) < 3:
@@ -185,13 +188,13 @@ class ParseFile:
                 except ValueError as e:
                     return "Fail", f"{hub.name} invalid max drones value: {e}"
                 if hub.max_drones <= 0:
-                    return "fail", (f"number of max drones in {hub.name} "
+                    return "Fail", (f"number of max drones in {hub.name} "
                                     "should be > 0")
                 hub.zone = settings.get("zone", "normal")
                 if hub.zone not in ZONES:
                     return "Fail", f"{hub.zone} is an invalid ZoneType"
                 if hub.zone == "blocked":
-                    hub.cost = float("inf")
+                    hub.cost = 1000
                 elif hub.zone == "restricted":
                     hub.cost = 2
                 if drone_map.hubs is not None:
@@ -221,27 +224,31 @@ class ParseFile:
                     except ValueError as e:
                         return "Fail", f"invalid max_link_capacity {e}"
                 if conection.max_link <= 0:
-                    return "fail", "number of max link capacity should be > 0"
+                    return "Fail", "number of max link capacity should be > 0"
                 drone_map.connections.append(conection)
             elif line.strip() == "" or line.startswith("#"):
                 continue
             else:
-                return "Faile", f"Unknowen line {line}"
+                return "Fail", f"Unknowen line {line}"
         return "succsess", drone_map
 
-    def validate_deeper(self, map: Map):
+    def validate_deeper(self, map: Map) -> (tuple[str, str] | tuple[str, Map]):
         connections = map.connections
         start_hub = map.start
         end_hub = map.end
         hubs = map.hubs
         for hub in hubs:
-            if hub.name == start_hub.name:
+            if start_hub is not None and hub.name == start_hub.name:
                 return "Fail", f"Multiple {start_hub.name}"
-            if hub.name == end_hub.name:
+            if end_hub is not None and hub.name == end_hub.name:
                 return "Fail", f"Multiple {end_hub.name}"
 
         valid: int = 1
         for connec in connections:
+            if start_hub is None:
+                return "Fail", "Missing start_hub"
+            if end_hub is None:
+                return "Fail", "Missing end_hub"
             if connec.start_name is None:
                 return "Fail", "in one connection a start point is missing"
             if connec.end_name is None:
@@ -266,11 +273,17 @@ class ParseFile:
                 return "Fail", (f"path {connec.start_name} - {connec.end_name}"
                                 "invalid path can't connect to itself")
             for h_conec in map.connections:
+                if h_conec.end_name is None or h_conec.start_name is None:
+                    return "Fail", "Connection has missing hub"
                 if (connec.start_name + connec.end_name ==
                    h_conec.end_name + h_conec.start_name):
                     return "Fail", "a connection A-B == B-A is found"
 
             for con in connections:
+                if start_hub is None:
+                    return "Fail", "Missing start_hub"
+                if end_hub is None:
+                    return "Fail", "Missing end_hub"
                 if con.start_name == start_hub.name:
                     con.start = start_hub
                 else:

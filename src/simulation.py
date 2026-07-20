@@ -40,7 +40,7 @@ class Simulation:
     def __init__(self, drones: list[Drone], map: Map, path: list[Hub]):
         self.drones = drones
         self.map = map
-        self.path = path
+        # self.path = path
         self.turn = 1
         self.counter = 1
         self.start()
@@ -62,9 +62,9 @@ class Simulation:
                     start_pos = d.position
                     nb_schedule = self.schedule(d)
                     if nb_schedule == 1:
-                        po_index = self.path.index(d.position)
-                        if self.check_next_hub(self.path[po_index + 1]):
-                            d.position = self.path[po_index + 1]
+                        po_index = d.path.index(d.position)
+                        if self.check_next_hub(d.path[po_index + 1]):
+                            d.position = d.path[po_index + 1]
                             turn.append(f"D{d.id} {TC[start_pos.color]}"
                                         f"{start_pos.name} {TC['reset']}-> "
                                         f"{TC[d.position.color]}"
@@ -101,7 +101,7 @@ class Simulation:
                         turns.append(move)
                     self.update_map()
             if self.check_drones() == 0:
-                for d in self.drones: 
+                for d in self.drones:
                     d.position = self.map.start
                 return moves
             print(f"Turn {self.turn}: ", end="")

@@ -14,7 +14,6 @@ class Menu:
         print("(2) Medium")
         print("(3) Hard")
         print("(4) Challenger")
-        print("(5) Coustom")
         print("(0) Exit")
         print()
         print("Select a Number:")
@@ -73,9 +72,6 @@ class Menu:
         print()
         print("Select a Number:")
 
-    def coustom_map(self):
-        print("no costum maps for the moment")
-
 
 def map_selctor(menu: Menu):
     menu.show()
@@ -118,7 +114,7 @@ def map_selctor(menu: Menu):
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
-            return
+            return "0", "good bye :)"
 
     elif user_input == 2:
         menu.medium_map()
@@ -144,7 +140,7 @@ def map_selctor(menu: Menu):
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
-            return
+            return "0", "good bye :)"
     elif user_input == 3:
         menu.hard_map()
         try:
@@ -169,7 +165,7 @@ def map_selctor(menu: Menu):
         elif second_input == 4:
             return map_selctor(menu)
         elif second_input == 0:
-            return
+            return "0", "good bye :)"
     elif user_input == 4:
         menu.challenger_map()
         try:
@@ -190,8 +186,7 @@ def map_selctor(menu: Menu):
         elif second_input == 2:
             return map_selctor(menu)
         elif second_input == 0:
-            return
-    elif user_input == 5:
-        menu.coustom_map()
+            return "0", "good bye :)"
+
     elif user_input == 0:
-        return
+        return "0", "good bye :)"

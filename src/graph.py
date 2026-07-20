@@ -11,23 +11,25 @@ class Nodes:
 
 class Graph:
     def __init__(self, map: Map):
-        self.nodes = {}
+        self.nodes: dict[str, Nodes] = {}
         self.map = map
         self.create_graph()
 
-    def create_graph(self):
+    def create_graph(self) -> None:
 
         for hub in self.map.hubs + [self.map.start, self.map.end]:
-            self.nodes[hub.name] = Nodes(hub)
+            if hub is not None:
+                self.nodes[hub.name] = Nodes(hub)
 
         for connection in self.map.connections:
-            start = self.nodes[connection.start.name]
-            end = self.nodes[connection.end.name]
+            if connection.start is not None and connection.end is not None:
+                start = self.nodes[connection.start.name]
+                end = self.nodes[connection.end.name]
 
-            start.neighbors.append(end)
-            end.neighbors.append(start)
+                start.neighbors.append(end)
+                end.neighbors.append(start)
 
-    def find_path_bfs(self, start_name: str, end_name: str):
+    def find_path_bfs(self, start_name: str, end_name: str) -> bool | list[Hub]:
         queue = []
         visited = set()
         queue.append([self.nodes[start_name].hub])
@@ -47,30 +49,25 @@ class Graph:
 
         return False
 
-    def find_path_dijkstra(self, start_name, end_name):
+    def find_path_dijkstra(self, start_name: str, end_name: str) -> list[Nodes]:
         distances = {}
-        previous = {}
+        previous: dict[str, Hub] = {}
 
         for name in self.nodes:
             distances[name] = float("inf")
             previous[name] = None
-
         distances[start_name] = 0
-
-        queue = []
+        queue: list[int, str] = []
         heapq.heappush(queue, (0, start_name))
 
         while queue:
-
             current_cost, current_name = heapq.heappop(queue)
-
             if current_name == end_name:
                 break
 
             current_node = self.nodes[current_name]
 
             for neighbor in current_node.neighbors:
-
                 neighbor_name = neighbor.hub.name
                 if neighbor.hub.zone == "priority":
                     new_cost = (
@@ -88,7 +85,6 @@ class Graph:
                         current_cost +
                         neighbor.hub.cost
                     )
-
                 if new_cost < distances[neighbor_name]:
 
                     distances[neighbor_name] = new_cost
@@ -104,9 +100,8 @@ class Graph:
             start_name,
             end_name
         )
-    
-    def reconstruct_path(self, previous, start, end):
 
+    def reconstruct_path(self, previous, start, end) -> list[Nodes]:
         path = []
         current = end
 
@@ -114,7 +109,6 @@ class Graph:
             path.append(self.nodes[current].hub)
             current = previous[current]
         path.reverse()
-
         if path[0].name != start:
             return []
 
