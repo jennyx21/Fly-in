@@ -38,6 +38,8 @@ class Move:
 
 
 class Simulation:
+    """Manages drone movement and collision detection in the simulation."""
+    
     def __init__(self, drones: list[Drone], map: Map, path: list[Hub]) -> None:
         self.drones = drones
         self.map = map

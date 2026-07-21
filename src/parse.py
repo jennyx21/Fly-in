@@ -59,8 +59,12 @@ class Map:
 
 
 class ParseFile:
-
+    """Parses map configuration files and validates map data."""
+    
     def read_file(self, filename: str) -> list[str]:
+        """
+        Read lines from a map configuration file.
+        """
         lines = []
         try:
             with open(filename) as f:

@@ -24,6 +24,7 @@ class Create_drones:
         self.map = map
 
     def init_drones(self, n: int) -> list[Drone]:
+        """creates the drones """
         drones = []
         i = 1
         if n == 1:

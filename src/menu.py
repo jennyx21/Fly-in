@@ -75,6 +75,7 @@ class Menu:
 
 
 def map_selctor(menu: Menu) -> Any | tuple[str, str]:
+    """ creates a map selector for better user experience"""
     menu.show()
     validator = NumberError()
     try:

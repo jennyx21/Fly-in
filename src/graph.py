@@ -11,6 +11,8 @@ class Nodes:
 
 
 class Graph:
+    """Builds a graph from map data and provides pathfinding algorithms."""
+    
     def __init__(self, map: Map) -> None:
         self.nodes: dict[str, Nodes] = {}
         self.map = map
@@ -32,6 +34,7 @@ class Graph:
                 end.neighbors.append(start)
 
     def find_path_bfs(self, start_name: str, end_name: str) -> list[Hub]:
+        """Find shortest path using breadth-first search."""
         queue: list[list[Hub]] = []
         visited: set[str] = set()
         start_hub = self.nodes[start_name].hub
@@ -63,6 +66,9 @@ class Graph:
         raise MapError("no Path")
 
     def find_path_dijkstra(self, start_name: str, end_name: str) -> list[Hub]:
+        """
+        Find lowest-cost path using Dijkstra's algorithm with zone modifiers.
+        """
         distances: dict[str, float] = {}
         previous: dict[str, str | None] = {}
 
