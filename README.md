@@ -143,6 +143,8 @@ Colors are used to distinguish different hub types and drone states.
 
 ### Resources
 
+-https://www.geeksforgeeks.org/dsa/dijkstras-shortest-path-algorithm-greedy-algo-7/
+-https://www.geeksforgeeks.org/dsa/breadth-first-search-or-bfs-for-a-graph/
 
 Artificial Intelligence was used as a learning and documentation aid.
 
